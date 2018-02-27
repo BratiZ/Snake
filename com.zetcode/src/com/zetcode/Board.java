@@ -18,31 +18,39 @@ import javax.swing.Timer;
 
 public class Board extends JPanel implements ActionListener {
 
-    private final int B_WIDTH = 300;
-    private final int B_HEIGHT = 300;
-    private final int DOT_SIZE = 10;
-    private final int ALL_DOTS = 900;
-    private final int RAND_POS = 29;
-    private final int DELAY = 140;
+    private final int B_WIDTH = 600,
+                      B_HEIGHT = 600,
+                      DOT_SIZE = 10,
+                      ALL_DOTS = 900,
+                      RAND_POS = 29,
+                      DELAY = 140;
 
-    private final int x[] = new int[ALL_DOTS];
-    private final int y[] = new int[ALL_DOTS];
+    private final int[] x = new int[ALL_DOTS],
+                        y = new int[ALL_DOTS];
 
-    private int dots;
-    private int apple_x;
-    private int apple_y;
+    private int dots,
+                apple_x,
+                apple_y,
+                tunnelInX,
+                tunnelInY,
+                tunnelOutX,
+                tunnelOutY,
+                pressedKey;
 
-    private boolean leftDirection = false;
-    private boolean rightDirection = true;
-    private boolean upDirection = false;
-    private boolean downDirection = false;
-    private boolean inGame = true;
-    private boolean muve = true;
+    private boolean leftDirection = false,
+                    rightDirection = true,
+                    upDirection = false,
+                    downDirection = false,
+                    inGame = true,
+                    muve = true;
 
     private Timer timer;
-    private Image ball;
-    private Image apple;
-    private Image head;
+    
+    private Image ball,
+                  apple,
+                  head,
+                  tunnelIn,
+                  tunnelOut;
 
     public Board() {
 
@@ -65,12 +73,18 @@ public class Board extends JPanel implements ActionListener {
 
         ImageIcon iih = new ImageIcon("head.png");
         head = iih.getImage();
+        
+        ImageIcon iiti = new ImageIcon("tunnel.png");
+        tunnelIn = iiti.getImage();
+        
+        ImageIcon iito = new ImageIcon("tunnel.png");
+        tunnelOut = iito.getImage();
     }
 
     private void initGame() {
 
         dots = 3;
-        
+        this.pressedKey = 39;
 
         for (int z = 0; z < dots; z++) {
             x[z] = 50 - z * 10;
@@ -78,6 +92,7 @@ public class Board extends JPanel implements ActionListener {
         }
 
         locateApple();
+        locateTunnel();
         
         timer = new Timer(DELAY, this);
         timer.start();
@@ -95,7 +110,9 @@ public class Board extends JPanel implements ActionListener {
         if (inGame) {
 
             g.drawImage(apple, apple_x, apple_y, this);
-
+            g.drawImage(tunnelIn, tunnelInX, tunnelInY, this);
+            g.drawImage(tunnelOut, tunnelOutX, tunnelOutY, this);
+            
             for (int z = 0; z < dots; z++) {
                 if (z == 0) {
                     g.drawImage(head, x[z], y[z], this);
@@ -176,11 +193,51 @@ public class Board extends JPanel implements ActionListener {
         if (x[0] >= B_WIDTH) {
             inGame = false;
         }
-
+            
         if (x[0] < 0) {
             inGame = false;
         }
         
+        if( x[0] == tunnelInX && y[0] == tunnelInY){
+            if(leftDirection){
+                x[0] = tunnelOutX - DOT_SIZE;
+                y[0] = tunnelOutY;
+            }
+            if(rightDirection){
+                x[0] = tunnelOutX + DOT_SIZE;
+                y[0] = tunnelOutY;
+            }
+            if(upDirection){
+                y[0] = tunnelOutY - DOT_SIZE;
+                x[0] = tunnelOutX;
+            }
+            
+            if(downDirection){
+                y[0] = tunnelOutY + DOT_SIZE;
+                x[0] = tunnelOutX;
+            }
+        }
+        
+        if( x[0] == tunnelOutX && y[0] == tunnelOutY){
+            if(leftDirection){
+                x[0] = tunnelInX - DOT_SIZE;
+                y[0] = tunnelInY;
+            }
+            if(rightDirection){
+                x[0] = tunnelInX + DOT_SIZE;
+                y[0] = tunnelInY;
+            }
+            if(upDirection){
+                y[0] = tunnelInY - DOT_SIZE;
+                x[0] = tunnelInX;
+            }
+            
+            if(downDirection){
+                y[0] = tunnelInY + DOT_SIZE;
+                x[0] = tunnelInX;
+            }
+        }
+
         if(!inGame) {
             timer.stop();
         }
@@ -195,12 +252,26 @@ public class Board extends JPanel implements ActionListener {
         apple_y = ((r * DOT_SIZE));
         
     }
+    
+    private void locateTunnel() {
+        int r = (int) (Math.random() * RAND_POS);
+        tunnelInX = ((r * DOT_SIZE));
+
+        r = (int) (Math.random() * RAND_POS);
+        tunnelInY = ((r * DOT_SIZE));
+        
+        r = (int) (Math.random() * RAND_POS);
+        tunnelOutX = ((r * DOT_SIZE));
+
+        r = (int) (Math.random() * RAND_POS);
+        tunnelOutY = ((r * DOT_SIZE));
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
         if (inGame) {
-
+            muve = true;
             checkApple();
             checkCollision();
             move();
@@ -212,39 +283,36 @@ public class Board extends JPanel implements ActionListener {
     private class TAdapter extends KeyAdapter {
 
         @Override
-        public void keyPressed(KeyEvent e) {
-            muve = true;
-            int key = e.getKeyCode();
+        public void keyPressed(KeyEvent e) {            
 
-            if ((key == KeyEvent.VK_LEFT) && (!rightDirection) && muve) {
+            pressedKey = e.getKeyCode();
+            
+            if ((pressedKey == KeyEvent.VK_LEFT) && (!rightDirection) && muve) {
                 leftDirection = true;
                 upDirection = false;
                 downDirection = false;
                 muve = false;
             }
 
-            if ((key == KeyEvent.VK_RIGHT) && (!leftDirection) && muve) {
+            else if ((pressedKey == KeyEvent.VK_RIGHT) && (!leftDirection) && muve) {
                 rightDirection = true;
                 upDirection = false;
                 downDirection = false;
                 muve = false;
-
             }
 
-            if ((key == KeyEvent.VK_UP) && (!downDirection) && muve) {
+            else if ((pressedKey == KeyEvent.VK_UP) && (!downDirection) && muve) {
                 upDirection = true;
                 rightDirection = false;
                 leftDirection = false;
-                                muve = false;
-
+                muve = false;
             }
 
-            if ((key == KeyEvent.VK_DOWN) && (!upDirection) && muve) {
+            else if ((pressedKey == KeyEvent.VK_DOWN) && (!upDirection) && muve) {
                 downDirection = true;
                 rightDirection = false;
                 leftDirection = false;
-                                muve = false;
-
+                muve = false;
             }
         }
     }

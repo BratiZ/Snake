@@ -9,7 +9,8 @@ public class frame extends JFrame{
         super();
         setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE);
         add( new Board());
-        setSize( 400, 400);
+        setSize( 600, 600);
+        setResizable(false);
         setVisible(true);
     }
 }
