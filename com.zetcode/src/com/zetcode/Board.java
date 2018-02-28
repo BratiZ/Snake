@@ -22,7 +22,7 @@ public class Board extends JPanel implements ActionListener {
                       B_HEIGHT = 600,
                       DOT_SIZE = 10,
                       ALL_DOTS = 900,
-                      RAND_POS = 29,
+                      RAND_POS = 59,
                       DELAY = 140;
 
     private final int[] x = new int[ALL_DOTS],
@@ -83,7 +83,7 @@ public class Board extends JPanel implements ActionListener {
 
     private void initGame() {
 
-        dots = 3;
+        dots = 4;
         this.pressedKey = 39;
 
         for (int z = 0; z < dots; z++) {
@@ -134,7 +134,7 @@ public class Board extends JPanel implements ActionListener {
         String msg = "Game Over";
         Font small = new Font("Helvetica", Font.BOLD, 14);
         FontMetrics metr = getFontMetrics(small);
-
+        
         g.setColor(Color.white);
         g.setFont(small);
         g.drawString(msg, (B_WIDTH - metr.stringWidth(msg)) / 2, B_HEIGHT / 2);
@@ -182,7 +182,7 @@ public class Board extends JPanel implements ActionListener {
             }
         }
 
-        if (y[0] >= B_HEIGHT) {
+        if (y[0] >= B_HEIGHT + DOT_SIZE) {
             inGame = false;
         }
 
@@ -190,7 +190,7 @@ public class Board extends JPanel implements ActionListener {
             inGame = false;
         }
 
-        if (x[0] >= B_WIDTH) {
+        if (x[0] >= B_WIDTH + DOT_SIZE) {
             inGame = false;
         }
             
@@ -313,6 +313,14 @@ public class Board extends JPanel implements ActionListener {
                 rightDirection = false;
                 leftDirection = false;
                 muve = false;
+            }
+            
+            if( pressedKey == KeyEvent.VK_R){
+                timer.stop();
+                inGame = true;
+                upDirection = leftDirection = downDirection = false;
+                rightDirection = true;
+                initGame();
             }
         }
     }
