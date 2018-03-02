@@ -23,7 +23,7 @@ public class Board extends JPanel implements ActionListener {
                       DOT_SIZE = 10,
                       ALL_DOTS = 900,
                       RAND_POS = 59,
-                      DELAY = 140;
+                      DELAY = 100;
 
     private final int[] x = new int[ALL_DOTS],
                         y = new int[ALL_DOTS];
@@ -254,16 +254,16 @@ public class Board extends JPanel implements ActionListener {
     }
     
     private void locateTunnel() {
-        int r = (int) (Math.random() * RAND_POS);
+        int r = (int) (Math.random() * RAND_POS/2);
         tunnelInX = ((r * DOT_SIZE));
 
-        r = (int) (Math.random() * RAND_POS);
+        r = (int) (Math.random() * RAND_POS/2);
         tunnelInY = ((r * DOT_SIZE));
         
-        r = (int) (Math.random() * RAND_POS);
+        r = (int) (Math.random() * RAND_POS/2 + RAND_POS/2);
         tunnelOutX = ((r * DOT_SIZE));
 
-        r = (int) (Math.random() * RAND_POS);
+        r = (int) (Math.random() * RAND_POS/2) + RAND_POS/2;
         tunnelOutY = ((r * DOT_SIZE));
     }
 
