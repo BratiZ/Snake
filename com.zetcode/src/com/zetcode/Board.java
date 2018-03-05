@@ -19,7 +19,7 @@ import javax.swing.Timer;
 public class Board extends JPanel implements ActionListener {
 
     private final int B_WIDTH = 600,
-                      B_HEIGHT = 600,
+                      B_HEIGHT = 620,
                       DOT_SIZE = 10,
                       ALL_DOTS = 900,
                       RAND_POS = 59,
@@ -109,7 +109,6 @@ public class Board extends JPanel implements ActionListener {
         
         if (inGame) {
 
-            g.drawImage(apple, apple_x, apple_y, this);
             g.drawImage(tunnelIn, tunnelInX, tunnelInY, this);
             g.drawImage(tunnelOut, tunnelOutX, tunnelOutY, this);
             
@@ -120,9 +119,14 @@ public class Board extends JPanel implements ActionListener {
                     g.drawImage(ball, x[z], y[z], this);
                 }
             }
-
+            g.setColor( Color.LIGHT_GRAY);
+            g.fillRect(0, 0, B_WIDTH+10, 20);
+            
+            g.setColor( Color.WHITE);
+            g.drawString("Points: " + (this.dots - 4), 2, 15);
             Toolkit.getDefaultToolkit().sync();
-
+            g.drawImage(apple, apple_x, apple_y, this);
+            
         } else {
 
             gameOver(g);
@@ -177,8 +181,8 @@ public class Board extends JPanel implements ActionListener {
 
         for (int z = dots; z > 0; z--) {
 
-            if ((z > 4) && (x[0] == x[z]) && (y[0] == y[z])) {
-                inGame = false;
+            if ((z > 3) && (x[0] == x[z]) && (y[0] == y[z])) {
+                dots = z;
             }
         }
 
@@ -186,7 +190,7 @@ public class Board extends JPanel implements ActionListener {
             inGame = false;
         }
 
-        if (y[0] < 0) {
+        if (y[0] < 2*DOT_SIZE) {
             inGame = false;
         }
 
@@ -245,10 +249,10 @@ public class Board extends JPanel implements ActionListener {
 
     private void locateApple() {
 
-        int r = (int) (Math.random() * RAND_POS-1)+1;
+        int r = (int) (Math.random() * (RAND_POS - 2)) + 2;
         apple_x = ((r * DOT_SIZE));
 
-        r = (int) (Math.random() * RAND_POS-1)+1;
+        r = (int) (Math.random() * (RAND_POS - 3)) + 3;
         apple_y = ((r * DOT_SIZE));
         
     }
@@ -286,35 +290,35 @@ public class Board extends JPanel implements ActionListener {
         public void keyPressed(KeyEvent e) {            
 
             pressedKey = e.getKeyCode();
-            
-            if ((pressedKey == KeyEvent.VK_LEFT) && (!rightDirection) && muve) {
-                leftDirection = true;
-                upDirection = false;
-                downDirection = false;
-                muve = false;
-            }
+            if( timer.isRunning() && muve){
+                if ((pressedKey == KeyEvent.VK_LEFT) && (!rightDirection)) {
+                    leftDirection = true;
+                    upDirection = false;
+                    downDirection = false;
+                    muve = false;
+                }
 
-            else if ((pressedKey == KeyEvent.VK_RIGHT) && (!leftDirection) && muve) {
-                rightDirection = true;
-                upDirection = false;
-                downDirection = false;
-                muve = false;
-            }
+                else if ((pressedKey == KeyEvent.VK_RIGHT) && (!leftDirection)) {
+                    rightDirection = true;
+                    upDirection = false;
+                    downDirection = false;
+                    muve = false;
+                }
 
-            else if ((pressedKey == KeyEvent.VK_UP) && (!downDirection) && muve) {
-                upDirection = true;
-                rightDirection = false;
-                leftDirection = false;
-                muve = false;
-            }
+                else if ((pressedKey == KeyEvent.VK_UP) && (!downDirection)) {
+                    upDirection = true;
+                    rightDirection = false;
+                    leftDirection = false;
+                    muve = false;
+                }
 
-            else if ((pressedKey == KeyEvent.VK_DOWN) && (!upDirection) && muve) {
-                downDirection = true;
-                rightDirection = false;
-                leftDirection = false;
-                muve = false;
+                else if ((pressedKey == KeyEvent.VK_DOWN) && (!upDirection)) {
+                    downDirection = true;
+                    rightDirection = false;
+                    leftDirection = false;
+                    muve = false;
+                }
             }
-            
             if( pressedKey == KeyEvent.VK_R){
                 timer.stop();
                 inGame = true;
@@ -322,6 +326,18 @@ public class Board extends JPanel implements ActionListener {
                 rightDirection = true;
                 initGame();
             }
+            
+            if( pressedKey == KeyEvent.VK_P){
+                if( timer.isRunning())
+                    timer.stop();
+                else 
+                    timer.start();
+            }
+            
+            if( pressedKey == KeyEvent.VK_T){
+                dots += 2; 
+            }
+            
         }
     }
 }
